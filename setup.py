@@ -1,15 +1,15 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name="jestlang",
-    version="0.1.0",
-    packages=find_packages(),
+    version="0.0.1",
+    py_modules=["main"],
     install_requires=[
-        "flask",
+        "flask"
     ],
     entry_points={
         "console_scripts": [
-            "jest=cli:CLI.main",
-        ],
-    },
+            "jest=main:main"
+        ]
+    }
 )

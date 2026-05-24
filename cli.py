@@ -1,7 +1,7 @@
 import sys
 import os
 from lexer import Lexer
-from parser import Parser
+from jest_parser import Parser
 from interpreter import Interpreter
 
 class CLI:

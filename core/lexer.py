@@ -1,4 +1,3 @@
-import re
 from enum import Enum, auto
 
 class TokenType(Enum):
@@ -6,39 +5,58 @@ class TokenType(Enum):
     STRING = auto()
     IDENTIFIER = auto()
     KEYWORD = auto()
-    
+
     EQUALS = auto()
+
     PLUS = auto()
     MINUS = auto()
     MUL = auto()
     DIV = auto()
-    
+    MOD = auto()
+
     LPAREN = auto()
     RPAREN = auto()
+
     LBRACE = auto()
     RBRACE = auto()
+
     LBRACKET = auto()
     RBRACKET = auto()
-    
+
     COLON = auto()
     COMMA = auto()
     DOT = auto()
-    
+
     GT = auto()
     LT = auto()
     GTE = auto()
     LTE = auto()
     EE = auto()
     NE = auto()
-    
+
+    NEWLINE = auto()
     INDENT = auto()
     DEDENT = auto()
-    NEWLINE = auto()
+
     EOF = auto()
 
 KEYWORDS = {
-    "fn", "if", "else", "for", "while", "return", 
-    "use", "break", "continue", "true", "false", "null"
+    "fn",
+    "if",
+    "else",
+    "for",
+    "while",
+    "return",
+    "use",
+    "break",
+    "continue",
+    "true",
+    "false",
+    "null",
+    "in",
+    "and",
+    "or",
+    "not"
 }
 
 class Token:
@@ -60,26 +78,28 @@ class Lexer:
         self.column = 1
         self.indent_stack = [0]
 
-    def advance(self):
-        char = self.source[self.pos]
-        self.pos += 1
-        if char == "\n":
-            self.line += 1
-            self.column = 1
-        else:
-            self.column += 1
-        return char
-
     def peek(self, offset=0):
         if self.pos + offset >= len(self.source):
             return None
         return self.source[self.pos + offset]
 
+    def advance(self):
+        char = self.source[self.pos]
+        self.pos += 1
+
+        if char == "\n":
+            self.line += 1
+            self.column = 1
+        else:
+            self.column += 1
+
+        return char
+
     def tokenize(self):
         while self.pos < len(self.source):
             char = self.peek()
 
-            if char == " ":
+            if char in [" ", "\t"]:
                 self.advance()
                 continue
 
@@ -108,48 +128,64 @@ class Lexer:
 
             if char == "=":
                 if self.peek(1) == "=":
-                    self.advance(); self.advance()
-                    self.tokens.append(Token(TokenType.EE, "==", self.line, self.column-2))
+                    self.advance()
+                    self.advance()
+                    self.tokens.append(Token(TokenType.EE, "==", self.line, self.column))
                 else:
                     self.advance()
-                    self.tokens.append(Token(TokenType.EQUALS, "=", self.line, self.column-1))
-                continue
-
-            if char == ">":
-                if self.peek(1) == "=":
-                    self.advance(); self.advance()
-                    self.tokens.append(Token(TokenType.GTE, ">=", self.line, self.column-2))
-                else:
-                    self.advance()
-                    self.tokens.append(Token(TokenType.GT, ">", self.line, self.column-1))
-                continue
-
-            if char == "<":
-                if self.peek(1) == "=":
-                    self.advance(); self.advance()
-                    self.tokens.append(Token(TokenType.LTE, "<=", self.line, self.column-2))
-                else:
-                    self.advance()
-                    self.tokens.append(Token(TokenType.LT, "<", self.line, self.column-1))
+                    self.tokens.append(Token(TokenType.EQUALS, "="))
                 continue
 
             if char == "!":
                 if self.peek(1) == "=":
-                    self.advance(); self.advance()
-                    self.tokens.append(Token(TokenType.NE, "!=", self.line, self.column-2))
-                else:
                     self.advance()
+                    self.advance()
+                    self.tokens.append(Token(TokenType.NE, "!="))
                 continue
 
-            simple_tokens = {
-                "+": TokenType.PLUS, "-": TokenType.MINUS, "*": TokenType.MUL, "/": TokenType.DIV,
-                "(": TokenType.LPAREN, ")": TokenType.RPAREN, "{": TokenType.LBRACE, "}": TokenType.RBRACE,
-                "[": TokenType.LBRACKET, "]": TokenType.RBRACKET, ":": TokenType.COLON, ",": TokenType.COMMA,
+            if char == ">":
+                if self.peek(1) == "=":
+                    self.advance()
+                    self.advance()
+                    self.tokens.append(Token(TokenType.GTE, ">="))
+                else:
+                    self.advance()
+                    self.tokens.append(Token(TokenType.GT, ">"))
+                continue
+
+            if char == "<":
+                if self.peek(1) == "=":
+                    self.advance()
+                    self.advance()
+                    self.tokens.append(Token(TokenType.LTE, "<="))
+                else:
+                    self.advance()
+                    self.tokens.append(Token(TokenType.LT, "<"))
+                continue
+
+            simple = {
+                "+": TokenType.PLUS,
+                "-": TokenType.MINUS,
+                "*": TokenType.MUL,
+                "/": TokenType.DIV,
+                "%": TokenType.MOD,
+
+                "(": TokenType.LPAREN,
+                ")": TokenType.RPAREN,
+
+                "{": TokenType.LBRACE,
+                "}": TokenType.RBRACE,
+
+                "[": TokenType.LBRACKET,
+                "]": TokenType.RBRACKET,
+
+                ":": TokenType.COLON,
+                ",": TokenType.COMMA,
                 ".": TokenType.DOT
             }
 
-            if char in simple_tokens:
-                self.tokens.append(Token(simple_tokens[char], char, self.line, self.column))
+            if char in simple:
+                self.tokens.append(Token(simple[char], char))
                 self.advance()
                 continue
 
@@ -158,50 +194,60 @@ class Lexer:
         while len(self.indent_stack) > 1:
             self.indent_stack.pop()
             self.tokens.append(Token(TokenType.DEDENT))
-            
+
         self.tokens.append(Token(TokenType.EOF))
         return self.tokens
 
     def handle_indentation(self):
         count = 0
+
         while self.peek() == " ":
             count += 1
             self.advance()
-        
+
         if self.peek() == "\n" or self.peek() is None:
             return
 
         if count > self.indent_stack[-1]:
             self.indent_stack.append(count)
             self.tokens.append(Token(TokenType.INDENT))
+
         elif count < self.indent_stack[-1]:
             while count < self.indent_stack[-1]:
                 self.indent_stack.pop()
                 self.tokens.append(Token(TokenType.DEDENT))
 
     def make_number(self):
-        num_str = ""
-        dot_count = 0
+        value = ""
+        dot = 0
+
         while self.peek() and (self.peek().isdigit() or self.peek() == "."):
             if self.peek() == ".":
-                dot_count += 1
-            num_str += self.advance()
-        
-        val = float(num_str) if dot_count > 0 else int(num_str)
-        return Token(TokenType.NUMBER, val, self.line, self.column - len(num_str))
+                dot += 1
+            value += self.advance()
+
+        value = float(value) if dot else int(value)
+
+        return Token(TokenType.NUMBER, value)
 
     def make_string(self):
         self.advance()
-        string = ""
+
+        value = ""
+
         while self.peek() and self.peek() != "\"":
-            string += self.advance()
+            value += self.advance()
+
         self.advance()
-        return Token(TokenType.STRING, string, self.line, self.column - len(string) - 2)
+
+        return Token(TokenType.STRING, value)
 
     def make_identifier(self):
-        id_str = ""
+        value = ""
+
         while self.peek() and (self.peek().isalnum() or self.peek() == "_"):
-            id_str += self.advance()
-        
-        type = TokenType.KEYWORD if id_str in KEYWORDS else TokenType.IDENTIFIER
-        return Token(type, id_str, self.line, self.column - len(id_str))
+            value += self.advance()
+
+        token_type = TokenType.KEYWORD if value in KEYWORDS else TokenType.IDENTIFIER
+
+        return Token(token_type, value)

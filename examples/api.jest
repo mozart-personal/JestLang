@@ -1,0 +1,15 @@
+use web
+
+print("Starting Jestlang API")
+
+app = web
+
+fn home():
+    return {
+        message: "Jestlang Online",
+        status: "running"
+    }
+
+app.get("/", home)
+
+app.run(3000)

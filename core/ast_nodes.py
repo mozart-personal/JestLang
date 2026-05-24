@@ -5,6 +5,14 @@ class Program(ASTNode):
     def __init__(self, body):
         self.body = body
 
+class Block(ASTNode):
+    def __init__(self, statements):
+        self.statements = statements
+
+class ExpressionStmt(ASTNode):
+    def __init__(self, expression):
+        self.expression = expression
+
 class VarAssign(ASTNode):
     def __init__(self, name, value):
         self.name = name
@@ -41,7 +49,12 @@ class Call(ASTNode):
         self.args = args
 
 class IfStmt(ASTNode):
-    def __init__(self, condition, then_branch, else_branch=None):
+    def __init__(
+        self,
+        condition,
+        then_branch,
+        else_branch=None
+    ):
         self.condition = condition
         self.then_branch = then_branch
         self.else_branch = else_branch
@@ -52,7 +65,12 @@ class WhileStmt(ASTNode):
         self.body = body
 
 class ForStmt(ASTNode):
-    def __init__(self, iterator, iterable, body):
+    def __init__(
+        self,
+        iterator,
+        iterable,
+        body
+    ):
         self.iterator = iterator
         self.iterable = iterable
         self.body = body
@@ -60,6 +78,12 @@ class ForStmt(ASTNode):
 class ReturnStmt(ASTNode):
     def __init__(self, value):
         self.value = value
+
+class BreakStmt(ASTNode):
+    pass
+
+class ContinueStmt(ASTNode):
+    pass
 
 class ImportStmt(ASTNode):
     def __init__(self, module):
@@ -74,6 +98,19 @@ class ObjectLiteral(ASTNode):
         self.pairs = pairs
 
 class MemberAccess(ASTNode):
-    def __init__(self, object, member):
+    def __init__(
+        self,
+        object,
+        member
+    ):
         self.object = object
         self.member = member
+
+class IndexAccess(ASTNode):
+    def __init__(
+        self,
+        object,
+        index
+    ):
+        self.object = object
+        self.index = index

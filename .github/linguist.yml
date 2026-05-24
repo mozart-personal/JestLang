@@ -1,0 +1,7 @@
+extensions:
+  - name: Jestlang
+    extensions:
+      - .jest
+    tm_scope: source.jestlang
+    ace_mode: text
+    language_id: 999999

@@ -1,0 +1,41 @@
+{
+  "name": "jestlang",
+  "displayName": "Jestlang",
+  "description": "Official Jestlang support",
+  "version": "0.0.1",
+  "publisher": "ByteMajesty",
+  "engines": {
+    "vscode": "^1.80.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "jestlang",
+        "aliases": [
+          "Jestlang",
+          "jest"
+        ],
+        "extensions": [
+          ".jest"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "jestlang",
+        "scopeName": "source.jestlang",
+        "path": "./syntaxes/jestlang.tmLanguage.json"
+      }
+    ],
+    "snippets": [
+      {
+        "language": "jestlang",
+        "path": "./snippets/jestlang.json"
+      }
+    ]
+  }
+}

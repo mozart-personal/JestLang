@@ -1,0 +1,18 @@
+{
+  "scopeName": "source.jestlang",
+  "name": "Jestlang",
+  "patterns": [
+    {
+      "match": "\\b(fn|if|else|for|while|return|use|true|false|null|break|continue|in)\\b",
+      "name": "keyword.control.jestlang"
+    },
+    {
+      "match": "\".*?\"",
+      "name": "string.quoted.double.jestlang"
+    },
+    {
+      "match": "\\b[0-9]+\\b",
+      "name": "constant.numeric.jestlang"
+    }
+  ]
+}
