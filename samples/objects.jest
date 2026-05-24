@@ -1,0 +1,15 @@
+user = {
+    name: "Lucas",
+    age: 19,
+    language: "Jestlang"
+}
+
+print(user.name)
+
+languages = [
+    "Jestlang",
+    "Python",
+    "Go"
+]
+
+print(languages)

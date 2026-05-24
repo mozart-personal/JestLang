@@ -1,0 +1,7 @@
+print("Hello, World!")
+
+fn greet(name):
+    print("Hello")
+    print(name)
+
+greet("Lucas")
